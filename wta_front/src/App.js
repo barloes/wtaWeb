@@ -17,14 +17,13 @@ class App extends Component {
     onFileChange = (event) => {
         // Update the state
         this.setState({ selectedFile: event.target.files[0] });
-        console.log("zzzzz");
-        console.log(event.target.files[0]);
     };
 
     // On file upload (click the upload button)
     onFileUpload = () => {
         console.log("aaaa");
         console.log(this.state.selectedFile);
+        this.setState({ stlLink: null });
 
         const url = "http://localhost:5000/";
         const formData = new FormData();
@@ -36,37 +35,36 @@ class App extends Component {
             },
         };
         axios.post(url, formData, config).then((resp) => {
-            this.setState({ stlLink: url + resp.data.filename });
-            this.setState({ min_thickness: resp.data.min_thickness });
-            this.setState({ max_thickness: resp.data.max_thickness });
-
-            this.setState({ fileUploaded: true });
+            this.setState({
+                stlLink: url + resp.data.filename,
+                min_thickness: resp.data.min_thickness,
+                max_thickness: resp.data.max_thickness,
+            });
         });
     };
 
     // File content to be displayed after
     // file upload is complete
     fileData = () => {
-        if (this.state.fileUploaded) {
+        if (this.state.stlLink) {
             console.log("bbbb");
             console.log(this.state.stlLink);
             return (
                 <div>
                     <div className="container1" id="div4">
-                        {this.state.stlLink ? (
-                            <STLViewer
-                                onSceneRendered={(element) => {
-                                    console.log(element);
-                                }}
-                                sceneClassName="test-scene"
-                                url={this.state.stlLink}
-                                className="obj"
-                                modelColor="#FF6347"
-                                width="500"
-                                height="500"
-                                backgroundColor="#d3d3d3"
-                            />
-                        ) : null}
+                        <STLViewer
+                            onSceneRendered={(element) => {
+                                console.log(element);
+                                console.log(this.state.stlLink);
+                            }}
+                            sceneClassName="test-scene"
+                            url={this.state.stlLink}
+                            className="obj"
+                            modelColor="#FF6347"
+                            width="500"
+                            height="500"
+                            backgroundColor="#d3d3d3"
+                        />
                     </div>
                 </div>
             );
@@ -80,7 +78,7 @@ class App extends Component {
     };
 
     cardData = () => {
-        if (this.state.fileUploaded) {
+        if (this.state.stlLink) {
             return (
                 <div>
                     <SimpleCard
